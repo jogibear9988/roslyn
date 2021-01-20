@@ -42,15 +42,18 @@ jobs:
         scriptPath: ./artifacts/bin/RunTests/${{ parameters.configuration }}/netcoreapp3.1/rehydrate.sh
       env:
         HELIX_CORRELATION_PAYLOAD: '$(Build.SourcesDirectory)/.duplicate'
+    condition: and(succeeded(), eq('${{ variables.helix }}', true))
 
-    # Work around for files not maintaining permissions after pipeline download
-    # https://github.com/microsoft/azure-pipelines-tasks/issues/6364
-    - bash: |
-        chmod 755 eng/build.sh
-      workingDirectory: '$(Build.SourcesDirectory)'
-      displayName: Fix executable permissions in pipeline artifact
+    - task: ShellScript@2
+      displayName: Rehydrate All
+      inputs:
+        filename: ./rehydrate-all.sh
+    condition: and(succeeded(), eq('${{ variables.helix }}', false))
 
-    - script: ./eng/build.sh --ci --helix --configuration ${{ parameters.configuration }} ${{ parameters.testArguments }}
+    - task: ShellScript@2
+      inputs:
+        filename: ./eng/build.sh
+        args: --ci --configuration ${{ parameters.configuration }} ${{ parameters.testArguments }} ${{ variables.helixArg }}
       displayName: Test
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
