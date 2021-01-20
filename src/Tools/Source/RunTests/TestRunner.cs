@@ -53,14 +53,21 @@ namespace RunTests
                 Environment.SetEnvironmentVariable("BUILD_SOURCEBRANCH", sourceBranch);
             }
 
-            var msbuildTestPayloadRoot = "$(AGENT_BUILDDIRECTORY)";
+            var msbuildTestPayloadRoot = Path.GetDirectoryName(_options.ArtifactsDirectory);
+            if (msbuildTestPayloadRoot is null)
+            {
+                throw new IOException($@"Malformed ArtifactsDirectory in options: ""{_options.ArtifactsDirectory}""");
+            }
+
             var isAzureDevOpsRun = Environment.GetEnvironmentVariable("SYSTEM_ACCESSTOKEN") is not null;
             if (!isAzureDevOpsRun)
             {
                 ConsoleUtil.WriteLine("SYSTEM_ACCESSTOKEN environment variable was not set, so test results will not be published.");
-                msbuildTestPayloadRoot = "$(RepoRoot)artifacts/testPayload/";
+                // in a local run we assume the user runs using the root test.sh and that the test payload is nested in the artifacts directory.
+                msbuildTestPayloadRoot = Path.Combine(msbuildTestPayloadRoot, "artifacts/testPayload");
             }
-            var correlationPayload = $@"<HelixCorrelationPayload Include=""{msbuildTestPayloadRoot}.duplicate"" />";
+            var duplicateDir = Path.Combine(msbuildTestPayloadRoot, ".duplicate");
+            var correlationPayload = $@"<HelixCorrelationPayload Include=""{duplicateDir}"" />";
 
             // TODO: it's possible we should be using the BUILD_SOURCEVERSIONAUTHOR instead here a la https://github.com/dotnet/arcade/blob/master/src/Microsoft.DotNet.Helix/Sdk/tools/xharness-runner/Readme.md#how-to-use
             // however that variable isn't documented at https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
