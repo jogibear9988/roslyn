@@ -49,7 +49,7 @@ jobs:
       displayName: Rehydrate All
       inputs:
         filename: ./rehydrate-all.cmd
-    condition: and(succeeded(), eq(variables.helix, false))
+      condition: and(succeeded(), eq(variables.helix, false))
 
     - task: PowerShell@2
       displayName: Run Unit Tests
