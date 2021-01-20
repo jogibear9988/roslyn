@@ -16,10 +16,7 @@ pr:
 
 variables:
   helix: true
-  ${{ if eq(variables.helix, true) }}:
-    helixArg: --helix
-  ${{ if eq(variables.helix, false) }}:
-    helixArg: ''
+  helixArg: --helix
 
 # Windows Build and Test Jobs 
 jobs:
