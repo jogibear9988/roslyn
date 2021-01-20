@@ -16,7 +16,6 @@ pr:
 
 variables:
   helix: true
-  helixArg: --helix
 
 # Windows Build and Test Jobs 
 jobs:
