@@ -42,13 +42,13 @@ jobs:
         scriptPath: ./artifacts/bin/RunTests/${{ parameters.configuration }}/netcoreapp3.1/rehydrate.sh
       env:
         HELIX_CORRELATION_PAYLOAD: '$(Build.SourcesDirectory)/.duplicate'
-    condition: and(succeeded(), eq('${{ variables.helix }}', true))
+      condition: and(succeeded(), eq(variables.helix, true))
 
     - task: ShellScript@2
       displayName: Rehydrate All
       inputs:
         filename: ./rehydrate-all.sh
-    condition: and(succeeded(), eq('${{ variables.helix }}', false))
+      condition: and(succeeded(), eq(variables.helix, false))
 
     - task: ShellScript@2
       inputs:

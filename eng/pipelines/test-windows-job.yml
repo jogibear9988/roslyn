@@ -43,13 +43,13 @@ jobs:
         filename: ./artifacts/bin/RunTests/${{ parameters.configuration }}/netcoreapp3.1/rehydrate.cmd
       env:
         HELIX_CORRELATION_PAYLOAD: '$(Build.SourcesDirectory)\.duplicate'
-    condition: and(succeeded(), eq('${{ variables.helix }}', true))
+      condition: and(succeeded(), eq(variables.helix, true))
 
     - task: BatchScript@1
       displayName: Rehydrate All
       inputs:
         filename: ./rehydrate-all.cmd
-    condition: and(succeeded(), eq('${{ variables.helix }}', false))
+    condition: and(succeeded(), eq(variables.helix, false))
 
     - task: PowerShell@2
       displayName: Run Unit Tests
