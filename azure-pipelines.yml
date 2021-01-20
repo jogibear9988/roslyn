@@ -14,9 +14,6 @@ pr:
 - features/*
 - demos/*
 
-variables:
-  helix: true
-
 # Windows Build and Test Jobs 
 jobs:
 - template: eng/pipelines/build-windows-job.yml

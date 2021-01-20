@@ -29,10 +29,6 @@ jobs:
     vmImage: windows-2019
   timeoutInMinutes: 120
 
-  variables:
-    ${{ if eq('${{ variables.helix }}', true) }}:
-      helixArg: -helix
-
   steps:
     - checkout: none
 
@@ -48,19 +44,19 @@ jobs:
         filename: ./artifacts/bin/RunTests/${{ parameters.configuration }}/netcoreapp3.1/rehydrate.cmd
       env:
         HELIX_CORRELATION_PAYLOAD: '$(Build.SourcesDirectory)\.duplicate'
-      condition: and(succeeded(), eq(variables.helix, true))
+      condition: succeeded()
 
     - task: BatchScript@1
       displayName: Rehydrate All
       inputs:
         filename: ./rehydrate-all.cmd
-      condition: and(succeeded(), eq(variables.helix, false))
+      condition: false
 
     - task: PowerShell@2
       displayName: Run Unit Tests
       inputs:
         filePath: eng/build.ps1
-        arguments: -ci -configuration ${{ parameters.configuration }} ${{ parameters.testArguments }} -collectDumps ${{ variables.helixArg }}
+        arguments: -ci -helix -configuration ${{ parameters.configuration }} ${{ parameters.testArguments }} -collectDumps
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
