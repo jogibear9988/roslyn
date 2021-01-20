@@ -128,7 +128,15 @@ internal static class MinimizeUtil
 
             // The "rehydrate-all" script assumes we are running all tests on a single machine instead of on Helix.
             var rehydrateAllBuilder = new StringBuilder();
-            rehydrateAllBuilder.AppendLine("set HELIX_CORRELATION_PAYLOAD=" + Path.Combine(destinationDirectory, ".duplicate"));
+            if (isUnix)
+            {
+                writeUnixHeaderContent(rehydrateAllBuilder);
+                rehydrateAllBuilder.AppendLine("export HELIX_CORRELATION_PAYLOAD=$scriptroot/.duplicate");
+            }
+            else
+            {
+                rehydrateAllBuilder.AppendLine(@"set HELIX_CORRELATION_PAYLOAD=%~dp0\.duplicate");
+            }
 
             var builder = new StringBuilder();
             foreach (var group in grouping)
@@ -139,7 +147,7 @@ internal static class MinimizeUtil
                 {
                     filename = "rehydrate.sh";
                     writeUnixRehydrateContent(builder, group);
-                    rehydrateAllBuilder.AppendLine(Path.Combine(".", group.Key, "rehydrate.sh"));
+                    rehydrateAllBuilder.AppendLine(@"bash """ + Path.Combine("$scriptroot", group.Key, "rehydrate.sh") + @"""");
                 }
                 else
                 {
@@ -181,7 +189,7 @@ if %errorlevel% neq 0 (
                 builder.AppendLine("@echo on"); // so the rest of the commands show up in helix logs
             }
 
-            static void writeUnixRehydrateContent(StringBuilder builder, IGrouping<string, (Guid Id, FilePathInfo FilePath)> group)
+            static void writeUnixHeaderContent(StringBuilder builder)
             {
                 builder.AppendLine(@"#!/bin/bash
 
@@ -197,6 +205,11 @@ source=""$(readlink ""$source"")""
 done
 scriptroot=""$( cd -P ""$( dirname ""$source"" )"" && pwd )""
 ");
+            }
+
+            static void writeUnixRehydrateContent(StringBuilder builder, IGrouping<string, (Guid Id, FilePathInfo FilePath)> group)
+            {
+                writeUnixHeaderContent(builder);
 
                 var count = 0;
                 foreach (var tuple in group)
