@@ -18,6 +18,10 @@ parameters:
   type: string
   default: ''
 
+variables:
+  ${{ if eq(variables.helix, true) }}:
+    helixArg: --helix
+
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn: ${{ parameters.buildJobName }}
@@ -51,9 +55,6 @@ jobs:
       condition: and(succeeded(), eq(variables.helix, false))
 
     - task: ShellScript@2
-      variables:
-        ${{ if eq(variables.helix, true) }}:
-          helixArg: --helix
       inputs:
         scriptPath: ./eng/build.sh
         args: --ci --configuration ${{ parameters.configuration }} ${{ parameters.testArguments }} ${{ variables.helixArg }}

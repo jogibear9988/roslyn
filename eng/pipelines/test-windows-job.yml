@@ -19,6 +19,10 @@ parameters:
   type: string
   default: ''
 
+variables:
+  ${{ if eq(variables.helix, true) }}:
+    helixArg: -helix
+
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn: ${{ parameters.buildJobName }}
@@ -52,9 +56,6 @@ jobs:
       condition: and(succeeded(), eq(variables.helix, false))
 
     - task: PowerShell@2
-      variables:
-        ${{ if eq(variables.helix, true) }}:
-          helixArg: -helix
       displayName: Run Unit Tests
       inputs:
         filePath: eng/build.ps1
