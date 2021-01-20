@@ -18,10 +18,6 @@ parameters:
   type: string
   default: ''
 
-variables:
-  ${{ if eq(variables.helix, true) }}:
-    helixArg: --helix
-
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn: ${{ parameters.buildJobName }}
@@ -31,6 +27,11 @@ jobs:
     # Thus we don't use a helix queue to run the job here, and instead use the plentiful AzDO vmImages.
     vmImage: ubuntu-20.04
   timeoutInMinutes: 40
+
+  variables:
+    ${{ if eq(variables.helix, true) }}:
+      helixArg: -helix
+
   steps:
     - checkout: none
 
