@@ -53,7 +53,7 @@ namespace RunTests
                 Environment.SetEnvironmentVariable("BUILD_SOURCEBRANCH", sourceBranch);
             }
 
-            var msbuildTestPayloadRoot = "$(RepoRoot)";
+            var msbuildTestPayloadRoot = "$(AGENT_BUILDDIRECTORY)";
             var isAzureDevOpsRun = Environment.GetEnvironmentVariable("SYSTEM_ACCESSTOKEN") is not null;
             if (!isAzureDevOpsRun)
             {
