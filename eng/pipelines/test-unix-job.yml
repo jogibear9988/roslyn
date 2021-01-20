@@ -27,7 +27,6 @@ jobs:
     # Thus we don't use a helix queue to run the job here, and instead use the plentiful AzDO vmImages.
     vmImage: ubuntu-20.04
   timeoutInMinutes: 40
-
   steps:
     - checkout: none
 
@@ -43,13 +42,6 @@ jobs:
         scriptPath: ./artifacts/bin/RunTests/${{ parameters.configuration }}/netcoreapp3.1/rehydrate.sh
       env:
         HELIX_CORRELATION_PAYLOAD: '$(Build.SourcesDirectory)/.duplicate'
-      condition: false
-
-    - task: ShellScript@2
-      displayName: Rehydrate All
-      inputs:
-        scriptPath: ./rehydrate-all.sh
-      condition: succeeded()
 
     - task: ShellScript@2
       inputs:

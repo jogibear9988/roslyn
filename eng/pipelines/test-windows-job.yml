@@ -28,7 +28,6 @@ jobs:
     # Thus we don't use a helix queue to run the job here, and instead use the plentiful AzDO vmImages.
     vmImage: windows-2019
   timeoutInMinutes: 120
-
   steps:
     - checkout: none
 
@@ -44,13 +43,6 @@ jobs:
         filename: ./artifacts/bin/RunTests/${{ parameters.configuration }}/netcoreapp3.1/rehydrate.cmd
       env:
         HELIX_CORRELATION_PAYLOAD: '$(Build.SourcesDirectory)\.duplicate'
-      condition: false
-
-    - task: BatchScript@1
-      displayName: Rehydrate All
-      inputs:
-        filename: ./rehydrate-all.cmd
-      condition: succeeded()
 
     - task: PowerShell@2
       displayName: Run Unit Tests
