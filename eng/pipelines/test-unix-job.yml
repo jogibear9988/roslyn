@@ -29,7 +29,7 @@ jobs:
   timeoutInMinutes: 40
 
   variables:
-    ${{ if eq(variables.helix, true) }}:
+    ${{ if eq(${{ variables.helix }}, true) }}:
       helixArg: -helix
 
   steps:
